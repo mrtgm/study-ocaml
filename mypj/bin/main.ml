@@ -377,7 +377,7 @@ let rec romaji_to_kanji str list = match list with
 let rec get_ekikan_kyori st tt list = match list with
 | [] -> infinity
 | {kiten = s; shuten = t; kyori = r; _} :: rest ->
-  if (s == st && t == tt) || (s == tt && t == st) then r else get_ekikan_kyori st tt rest
+  if (s = st && t = tt) || (s = tt && t = st) then r else get_ekikan_kyori st tt rest
 
 (* ローマ字の駅名を２つ受取り、そのあいだの距離を調べ、直接繋がってる場合は距離を示す文字列を返す*)
 (* つながってない場合はつながってない旨を示す文字列を返す　駅が存在しない場合はその旨を返す*)
@@ -402,9 +402,9 @@ let rec shokika s list = match list with
   if n = s then {namae = n; saitan_kyori = 0.; temae_list = [n;] } :: rest
   else shokika s rest
 
-let rec erase t list = match list with
+let rec erase ({kanji = k1; _} as t) list = match list with
 | [] -> []
-| first :: rest -> if first = t then rest else first :: (erase t rest)
+| {kanji = k2; _} as first :: rest -> if k1 = k2 then erase t rest else first :: (erase t rest)
 
 let rec unique list = match list with
 | [] -> []
@@ -421,31 +421,40 @@ let rec seiretsu list = match list with
 | [] -> []
 | first :: rest -> unique (insert first (seiretsu rest))
 
-let test1 =  seiretsu [
-  {
-    kana = "1";
-    kanji = "1";
-    romaji = "1";
-    shozoku = "1";
-  };
-  {
-    kana = "3";
-    kanji = "3";
-    romaji = "3";
-    shozoku = "3";
-  };
-  {
-    kana = "2";
-    kanji = "2";
-    romaji = "2";
-    shozoku = "2";
-  };
-  {
-    kana = "4";
-    kanji = "4";
-    romaji = "4";
-    shozoku = "4";
-  }
-]
+
+(* ステップ0 *)
+let eki_t_list = shokika "渋谷" (make_eki_list (seiretsu global_ekimei_list))
 
 
+(* 直前に確定した駅 p と未確定の駅 q を受け取り、 p と q が繋がっているか調べる*)
+(* 繋がっていれば q の最短距離と手前リストを更新、繋がっていなかったら q を返す*)
+let kousin1 p q =
+  let get_kyori p q = get_ekikan_kyori p q global_ekikan_list in
+  let distance = get_kyori p.namae q.namae in
+  if distance == infinity then
+    q
+  else
+  match p with {saitan_kyori = ps; _} ->
+   if (ps +. distance) < q.saitan_kyori then
+    { saitan_kyori = ps +. distance;
+      temae_list = q.namae :: p.temae_list;
+      namae = q.namae; }
+    else q
+
+let rec map f list = match list with
+| [] -> []
+| first :: rest -> f first :: map f rest
+
+let kousin p (q: eki_t list) = map (kousin1 p) q
+
+let p = {
+  namae = "東京";
+  saitan_kyori = 0.0;
+  temae_list = ["東京"]
+}
+
+let q = {
+  namae = "銀座";
+  saitan_kyori = infinity;
+  temae_list = []
+}
