@@ -1,3 +1,8 @@
+
+(*駅名と駅名リストを受取り、その駅のレコードを返す*)
+
+
+
 type ekimei_t = {
   kanji: string;
   kana: string;
@@ -13,12 +18,12 @@ type ekikan_t = {
   jikan: int;
 }
 
-let hyoji (ekimei: ekimei_t) = match ekimei with
-| {
-  kanji= k;
-  kana = ka;
-  shozoku = s;
-} -> s ^ "," ^ k ^ "(" ^ ka ^ ")"
+type eki_t = {
+  namae: string;
+  saitan_kyori: float;
+  temae_list: string list;
+}
+
 let global_ekimei_list = [
 {kanji="代々木上原"; kana="よよぎうえはら"; romaji="yoyogiuehara"; shozoku="千代田線"};
 {kanji="代々木公園"; kana="よよぎこうえん"; romaji="yoyogikouen"; shozoku="千代田線"};
@@ -352,4 +357,95 @@ let global_ekikan_list = [
 {kiten="営団成増"; shuten="和光市"; keiyu="有楽町線"; kyori=2.1; jikan=3};
 ]
 
-let test = hyoji {kanji="茗荷谷"; kana="みょうがだに"; romaji="myogadani"; shozoku="丸の内線"} = "丸の内線,茗荷谷"
+
+
+let hyoji (ekimei: ekimei_t) = match ekimei with
+| {
+  kanji= k;
+  kana = ka;
+  shozoku = s;
+} -> s ^ "," ^ k ^ "(" ^ ka ^ ")"
+
+
+(*ローマ字表記の駅名を受取り、漢字表記を返す*)
+let rec romaji_to_kanji str list = match list with
+| [] -> ""
+| { romaji = r; kanji = k; } :: rest -> if r = str then k else romaji_to_kanji str rest
+
+
+(* 駅名をふたつ受取り、その間の距離を返す*)
+let rec get_ekikan_kyori st tt list = match list with
+| [] -> infinity
+| {kiten = s; shuten = t; kyori = r; _} :: rest ->
+  if (s == st && t == tt) || (s == tt && t == st) then r else get_ekikan_kyori st tt rest
+
+(* ローマ字の駅名を２つ受取り、そのあいだの距離を調べ、直接繋がってる場合は距離を示す文字列を返す*)
+(* つながってない場合はつながってない旨を示す文字列を返す　駅が存在しない場合はその旨を返す*)
+let rec kyori_wo_hyoji st tt =
+  let st_kanji = romaji_to_kanji st global_ekimei_list in
+  let tt_kanji = romaji_to_kanji tt global_ekimei_list in
+  if st_kanji == "" || tt_kanji == "" then "駅が存在しません"
+  else  let kyori = get_ekikan_kyori st_kanji tt_kanji global_ekikan_list in
+   if kyori = infinity then "繋がってません" else
+  "距離は" ^ string_of_float (get_ekikan_kyori st_kanji tt_kanji global_ekikan_list)
+
+
+let rec make_eki_list list = match list with
+ | [] -> []
+ | {kanji = k} :: rest ->
+   {namae = k; saitan_kyori = infinity; temae_list = [] } :: make_eki_list rest
+
+(* 始点を初期化 *)
+let rec shokika s list = match list with
+| [] -> []
+| {namae = n} :: rest ->
+  if n = s then {namae = n; saitan_kyori = 0.; temae_list = [n;] } :: rest
+  else shokika s rest
+
+let rec erase t list = match list with
+| [] -> []
+| first :: rest -> if first = t then rest else first :: (erase t rest)
+
+let rec unique list = match list with
+| [] -> []
+| first :: rest -> first :: erase first (unique rest)
+
+let rec insert ekimei list = match list with
+| [] -> [ekimei]
+| ({kana = k; _} as first) :: rest ->
+  match ekimei with {kana = str; _} ->
+    if k >= str then
+    ekimei :: list else first :: insert ekimei rest
+
+let rec seiretsu list = match list with
+| [] -> []
+| first :: rest -> unique (insert first (seiretsu rest))
+
+let test1 =  seiretsu [
+  {
+    kana = "1";
+    kanji = "1";
+    romaji = "1";
+    shozoku = "1";
+  };
+  {
+    kana = "3";
+    kanji = "3";
+    romaji = "3";
+    shozoku = "3";
+  };
+  {
+    kana = "2";
+    kanji = "2";
+    romaji = "2";
+    shozoku = "2";
+  };
+  {
+    kana = "4";
+    kanji = "4";
+    romaji = "4";
+    shozoku = "4";
+  }
+]
+
+

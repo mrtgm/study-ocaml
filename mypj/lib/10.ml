@@ -94,12 +94,36 @@ let rec shukei lst = match lst with
 
 (* lst1 と lst2 を結合する*)
 let rec append lst1 lst2 = match lst1 with
-| [] -> []
-| first :: rest -> []
+| [] -> lst2
+| first :: rest -> first :: append rest lst2
 
 let test1 = append [] [] = []
 let test2  = append [] [1;2] = [1;2]
 let test3 = append [1;2] [3;4] = [1;2;3;4]
+
+
+(* ふたつの昇順に並んだリストをマージする *)
+let rec merge lst1 lst2 = match (lst1, lst2) with
+| ([], []) -> []
+| ([], first2 :: rest2) -> lst2 (*merge lst1 rest2*)
+| (first1 :: rest1, []) -> lst1 (*merge rest1 lst2*)
+| (first1 :: rest1, first2 :: rest2) ->
+    if first1 < first2
+      then first1 :: merge rest1 lst2
+      else first2 :: merge lst1 rest2
+
+let rec equal_length lst1 lst2 = match (lst1, lst2) with
+| ([],[]) -> true
+| ([], lst) -> false
+| (lst, []) -> false
+| (first1 :: rest1, first2 :: rest2) ->
+    equal_length rest1 rest2
+
+let test1 = equal_length [1;2] [3;4] = true
+let test2 = equal_length [1;] [3;4] = false
+
+
+
 
 
 

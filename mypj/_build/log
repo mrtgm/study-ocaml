@@ -1,0 +1,33 @@
+# dune build
+# OCAMLPARAM: unset
+# Shared cache: disabled
+# Shared cache location: /Users/mrtgm/.cache/dune/db
+# Workspace root: /Users/mrtgm/Documents/GitHub/study-ocaml/mypj
+# Auto-detected concurrency: 8
+# Dune context:
+#  { name = "default"
+#  ; kind = "default"
+#  ; profile = Dev
+#  ; merlin = true
+#  ; fdo_target_exe = None
+#  ; build_dir = In_build_dir "default"
+#  ; instrument_with = []
+#  }
+$ /Users/mrtgm/.opam/default/bin/ocamlc.opt -config > /var/folders/8z/58spgqdx3wqbtpmrtd1s_1r00000gn/T/dune_d4061a_output
+# Promoting "_build/default/mypj.opam" to "mypj.opam"
+$ (cd _build/default && /Users/mrtgm/.opam/default/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -bin-annot -bin-annot-occurrences -I lib/.mypj.objs/byte -no-alias-deps -opaque -o lib/.mypj.objs/byte/mypj.cmo -c -impl lib/mypj.ml-gen)
+> File "lib/mypj.ml-gen", line 4, characters 7-9:
+> 4 | module 10 = Mypj__10
+>            ^^
+> Error: Syntax error
+[2]
+$ (cd _build/default && /Users/mrtgm/.opam/default/bin/ocamldep.opt -modules -impl lib/8.ml) > _build/default/lib/.mypj.objs/mypj__8.impl.d
+$ (cd _build/default && /Users/mrtgm/.opam/default/bin/ocamldep.opt -modules -impl lib/4.ml) > _build/default/lib/.mypj.objs/mypj__4.impl.d
+$ (cd _build/default && /Users/mrtgm/.opam/default/bin/ocamldep.opt -modules -impl lib/10.ml) > _build/default/lib/.mypj.objs/mypj__10.impl.d
+$ (cd _build/default && /Users/mrtgm/.opam/default/bin/ocamldep.opt -modules -impl lib/main.ml) > _build/default/lib/.mypj.objs/mypj__Main.impl.d
+$ (cd _build/default && /Users/mrtgm/.opam/default/bin/ocamldep.opt -modules -impl lib/5.ml) > _build/default/lib/.mypj.objs/mypj__5.impl.d
+$ (cd _build/default && /Users/mrtgm/.opam/default/bin/ocamldep.opt -modules -impl lib/9.ml) > _build/default/lib/.mypj.objs/mypj__9.impl.d
+$ (cd _build/default && /Users/mrtgm/.opam/default/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -bin-annot-occurrences -I test/.test_mypj.eobjs/byte -no-alias-deps -opaque -o test/.test_mypj.eobjs/byte/dune__exe__Test_mypj.cmi -c -intf test/test_mypj.mli)
+$ (cd _build/default && /Users/mrtgm/.opam/default/bin/ocamldep.opt -modules -impl lib/station.ml) > _build/default/lib/.mypj.objs/mypj__Station.impl.d
+$ (cd _build/default && /Users/mrtgm/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I test/.test_mypj.eobjs/byte -I test/.test_mypj.eobjs/native -intf-suffix .ml -no-alias-deps -opaque -o test/.test_mypj.eobjs/native/dune__exe__Test_mypj.cmx -c -impl test/test_mypj.ml)
+$ (cd _build/default && /Users/mrtgm/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -o test/test_mypj.exe test/.test_mypj.eobjs/native/dune__exe__Test_mypj.cmx)
